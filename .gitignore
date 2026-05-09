@@ -1,0 +1,16 @@
+# Node modules (both apps)
+**/node_modules/
+
+# Build outputs
+**/dist/
+**/.angular/
+
+# IDE / OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+**/npm-debug.log
+**/yarn-error.log
