@@ -1,59 +1,137 @@
-# RemoteApp
+# remote-app — MFE Remote
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+The **remote application** is an independently deployable Micro Frontend that runs on **port 4201**. It exposes the `ProductList` component via **Angular Native Federation**, which the host app loads dynamically at runtime.
 
-## Development server
+---
 
-To start a local development server, run:
+## Role in the Architecture
 
-```bash
-ng serve
+```
+remote-app (port 4201)
+  └── Serves remoteEntry.json  ← host-app reads this at runtime
+        └── Exposes ./ProductList → src/app/product-list/product-list.ts
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+This app can be developed, tested, and deployed **completely independently** of the host. It serves its own `remoteEntry.json` manifest that tells consumers what it exposes and which libraries it shares.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Tech Stack
+
+| Tool | Version |
+|------|---------|
+| Angular | 21.2.x |
+| @angular-architects/native-federation | 21.2.x |
+| Tailwind CSS | 3.4.x |
+| TypeScript | 5.9.x |
+| Vitest | 4.x |
+
+---
+
+## Prerequisites
+
+- Node.js >= 20.x
+- npm >= 11.x
+- Angular CLI >= 21.x
+
+---
+
+## Getting Started
 
 ```bash
-ng generate component component-name
+npm install
+ng serve --port 4201
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The app is available at `http://localhost:4201` as a standalone Angular app, and also serves its federation manifest at `http://localhost:4201/remoteEntry.json`.
 
-```bash
-ng generate --help
+---
+
+## What This App Exposes
+
+Configured in `federation.config.js`:
+
+| Federation Key | Component | Description |
+|----------------|-----------|-------------|
+| `./ProductList` | `ProductList` | Product grid with category filter and cart |
+
+### ProductList Component
+
+Located at `src/app/product-list/product-list.ts`. Features:
+
+- **8 products** across 3 categories: Footwear, Clothing, Electronics
+- **Category filter** tabs to narrow the product grid
+- **Add to Cart** button with a running cart count
+- **Product badges**: Best Seller, New, Sale — each with a distinct colour
+- Fully styled with **Tailwind CSS**
+
+---
+
+## Federation Configuration
+
+`federation.config.js`:
+
+```js
+const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
+
+module.exports = withNativeFederation({
+  name: 'remoteApp',
+  exposes: {
+    './ProductList': './src/app/product-list/product-list.ts',
+  },
+  shared: {
+    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+  },
+});
 ```
 
-## Building
+`shareAll` ensures Angular core, RxJS, and other heavy libraries are shared with the host — loaded only once in the browser regardless of how many MFEs are running.
 
-To build the project run:
+---
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `ng serve --port 4201` | Start development server on port 4201 |
+| `ng build` | Production build → `dist/remote-app/` |
+| `ng build --watch` | Watch mode build for development |
+| `ng test` | Run unit tests with Vitest |
+| `ng e2e` | Run end-to-end tests (requires e2e framework) |
+
+---
+
+## Project Structure
+
+```
+remote-app/
+├── src/
+│   ├── app/
+│   │   ├── app.ts                          # Root component (standalone shell)
+│   │   ├── app.html
+│   │   ├── app.routes.ts
+│   │   ├── app.config.ts
+│   │   ├── app.scss
+│   │   └── product-list/
+│   │       ├── product-list.ts             # Exposed federated component
+│   │       ├── product-list.html
+│   │       └── product-list.scss
+│   ├── index.html
+│   ├── bootstrap.ts
+│   ├── main.ts
+│   └── styles.scss
+├── federation.config.js                    # Native Federation remote config
+├── angular.json
+├── tailwind.config.js
+└── tsconfig.json
+```
+
+---
+
+## Building for Production
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Output is placed in `dist/remote-app/`. The `remoteEntry.json` in the build output must be reachable by the host app. Update the host's remote URL configuration to point to the deployed remote entry URL.
