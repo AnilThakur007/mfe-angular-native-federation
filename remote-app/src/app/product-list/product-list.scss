@@ -1,0 +1,22 @@
+// Any extra custom styles that Tailwind doesn't provide
+// For example, you can add custom keyframe animations or fine-tuning
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Optional: smooth scrolling for the whole app
+:host {
+  display: block;
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,86 @@
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <!-- Hero Section with Parallax-like effect -->
+  <div class="relative rounded-2xl overflow-hidden mb-16 shadow-2xl">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-700 via-pink-600 to-red-600 opacity-90"></div>
+    <img src="https://picsum.photos/id/42/1600/400" alt="Hero" class="w-full h-80 object-cover mix-blend-overlay">
+    <div class="absolute inset-0 flex flex-col justify-center items-center text-white text-center p-6">
+      <h1 class="text-5xl md:text-6xl font-extrabold mb-4 animate-bounce">🔥 Mega Deals</h1>
+      <p class="text-xl md:text-2xl max-w-2xl">Discover the best products from our remote MFE with lightning-fast delivery</p>
+      <div class="flex gap-4 mt-6">
+        <span class="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">🚚 Free Shipping</span>
+        <span class="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">💰 30-Day Returns</span>
+        <span class="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">✓ Trusted by 10k+</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter – modern pill design -->
+  <div class="flex flex-wrap justify-center gap-3 mb-12">
+    <button (click)="selectedCategory='all'"
+            [class.bg-indigo-700]="selectedCategory==='all'"
+            [class.text-white]="selectedCategory==='all'"
+            [class.shadow-lg]="selectedCategory==='all'"
+            class="px-6 py-2.5 rounded-full font-semibold transition-all duration-200 bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105">
+      🎯 All Products
+    </button>
+    <button (click)="selectedCategory='clothing'"
+            [class.bg-indigo-700]="selectedCategory==='clothing'"
+            class="px-6 py-2.5 rounded-full font-semibold transition-all duration-200 bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105">
+      👕 Clothing
+    </button>
+    <button (click)="selectedCategory='electronics'"
+            [class.bg-indigo-700]="selectedCategory==='electronics'"
+            class="px-6 py-2.5 rounded-full font-semibold transition-all duration-200 bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105">
+      📱 Electronics
+    </button>
+    <button (click)="selectedCategory='footwear'"
+            [class.bg-indigo-700]="selectedCategory==='footwear'"
+            class="px-6 py-2.5 rounded-full font-semibold transition-all duration-200 bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105">
+      👟 Footwear
+    </button>
+  </div>
+
+  <!-- Product Grid with Hover Animations -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div *ngFor="let product of filteredProducts"
+         class="bg-white rounded-2xl shadow-md hover:shadow-2xl transform transition-all duration-300 hover:-translate-y-2 overflow-hidden group">
+      <!-- Image Container with Badge -->
+      <div class="relative overflow-hidden h-64">
+        <img [src]="product.image" [alt]="product.name"
+             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+        <div *ngIf="product.badge"
+             class="absolute top-4 left-4 z-10">
+          <span [class]="'text-white text-xs font-bold px-3 py-1 rounded-full shadow-md ' + getBadgeColor(product.badge)">
+            {{ product.badge }}
+          </span>
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="p-5">
+        <h3 class="text-xl font-bold text-gray-800 line-clamp-1">{{ product.name }}</h3>
+        <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ product.description }}</p>
+        <div class="flex items-baseline justify-between mt-4">
+          <span class="text-2xl font-extrabold text-indigo-600">\${{ product.price }}</span>
+          <span class="text-sm text-gray-400 line-through" *ngIf="product.badge === 'Sale'">\${{ (product.price * 1.2).toFixed(2) }}</span>
+        </div>
+        <button (click)="addToCart(product)"
+                class="mt-4 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+          🛒 Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state if no products -->
+  <div *ngIf="filteredProducts.length === 0" class="text-center py-20">
+    <p class="text-gray-500 text-lg">No products in this category yet.</p>
+  </div>
+
+  <!-- Remote Info Footer -->
+  <div class="mt-20 text-center border-t border-gray-200 pt-8">
+    <p class="text-gray-500 text-sm">✨ Loaded dynamically via Angular Native Federation from <strong>remote-app</strong> (port 4201)</p>
+    <p class="text-xs text-gray-400 mt-2">Styled with Tailwind CSS v3 – responsive, modern, and fast</p>
+  </div>
+</div>
